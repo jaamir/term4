@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEEK 1 OVERVIEW</title>
+</head>
+<body>
+    <h1>Text Modifier</h1>
+    <label for="textInput">Enter some text:</label>
+    <input type="text" id="textInput">
+    <button onclick="modifyText()">Modify Text</button>
+    <p id="output"></p>
+
+    <hr>
+
+    <h1>To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Enter a new task">
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+        let tasks = [];
+
+        function modifyText() {
+            const inputText = document.getElementById('textInput').value;
+
+            if (!inputText) {
+                alert('Please enter some text!');
+                return;
+            }
+
+            let modifiedText = '';
+
+            for (let i = 0; i < inputText.length; i++) {
+                let char = inputText[i];
+                if (i % 2 === 0) {
+                    char = char.toUpperCase();
+                } else {
+                    char = char.toLowerCase();
+                }
+                modifiedText += char;
+            }
+
+            const outputElement = document.getElementById('output');
+            outputElement.textContent = `Modified Text: ${modifiedText}`;
+
+            const textStats = getTextStats(inputText);
+            console.log(textStats);
+        }
+
+        function getTextStats(text) {
+            const stats = {
+                length: text.length,
+                uppercaseCount: 0,
+                lowercaseCount: 0,
+                wordCount: text.trim().split(/\s+/).length
+            };
+
+            for (let char of text) {
+                if (char === char.toUpperCase()) {
+                    stats.uppercaseCount++;
+                } else if (char === char.toLowerCase()) {
+                    stats.lowercaseCount++;
+                }
+            }
+
+            return stats;
+        }
+
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+
+            if (!taskText) {
+                alert('Please enter a task!');
+                return;
+            }
+
+            const newTask = {
+                id: tasks.length + 1,
+                text: taskText,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            taskInput.value = '';
+            renderTasks();
+        }
+
+        function toggleTaskCompleted(taskId) {
+            const task = tasks.find(task => task.id === taskId);
+            if (task) {
+                task.completed = !task.completed;
+                renderTasks();
+            }
+        }
+
+        function removeTask(taskId) {
+            tasks = tasks.filter(task => task.id !== taskId);
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.textContent = task.text;
+                if (task.completed) {
+                    li.style.textDecoration = 'line-through';
+                }
+
+                const toggleButton = document.createElement('button');
+                toggleButton.textContent = task.completed ? 'Mark Incomplete' : 'Mark Complete';
+                toggleButton.onclick = () => toggleTaskCompleted(task.id);
+                li.appendChild(toggleButton);
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => removeTask(task.id);
+                li.appendChild(removeButton);
+
+                taskList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
